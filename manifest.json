@@ -5,21 +5,23 @@
   "description": "Save your gmail search queries and quickly access when required",
   "homepage_url": "https://github.com/kdabir/gmail-saved-searches",
   "icons": {
-    "16": "icons/icon16.png",
     "24": "icons/icon24.png",
-    "32": "icons/icon32.png",
+    "36": "icons/icon36.png",
+    "48": "icons/icon48.png",
     "64": "icons/icon64.png",
-    "128": "icons/icon128.png"
+    "128": "icons/icon128.png",
+    "256": "icons/icon256.png"
   },
   "page_action": {
     "default_popup": "action.html",
     "default_title": "GMail Saved Searches",
     "default_icon": {
-      "16": "icons/icon16.png",
       "24": "icons/icon24.png",
-      "32": "icons/icon32.png",
+      "36": "icons/icon36.png",
+      "48": "icons/icon48.png",
       "64": "icons/icon64.png",
-      "128": "icons/icon128.png"
+      "128": "icons/icon128.png",
+      "256": "icons/icon256.png"
     }
   },
   "background": {
@@ -32,6 +34,7 @@
     "https://mail.google.com/*",
     "tabs",
     "storage",
+    "downloads",
     "declarativeContent"
   ]
 }

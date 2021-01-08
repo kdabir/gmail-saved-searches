@@ -42,4 +42,18 @@ $(function () {
             });
         }
     });
+
+    $("#export").click(function () {
+        chrome.storage.sync.get("savedFilters", function ({savedFilters}) {
+            const blob = new Blob([JSON.stringify(savedFilters, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob)
+
+            chrome.downloads.download({
+                url: url,
+                filename: "gmail-saved-searches-export.json",
+                //saveAs: true, // todo doesn't work and only temp file is created in downloads dir
+            })
+        });
+    });
+
 });
