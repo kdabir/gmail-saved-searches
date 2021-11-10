@@ -1,44 +1,50 @@
 <!doctype html>
 <html>
 <head>
-    <style type="text/css">
-        #mainPopup {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <style>
+        #popup {
             padding: 10px;
-            height: 600px;
-            width: 300px;
+            min-height: 640px;
+            min-width: 320px;
             font-family: Helvetica, Ubuntu, Arial, sans-serif;
         }
 
         h1 {
             font-size: 2em;
         }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+            }
+        }
     </style>
 
 </head>
 <body>
-<div id="mainPopup">
+<div id="popup">
 
     <h3>Gmail Saved Searches</h3>
 
     <ul id="filters">
     </ul>
 
-    <button id="add">Save Current Filter</button>
 
-    <button id="export">Export</button>
+    <button id="add">Save Current Search</button>
 
-    <div>
-        Import <input type="file" id="import">
-    </div>
+    <details>
+        <summary>Advanced</summary>
+        <span> <button id="export">Export</button> <button id="clear">Delete All</button></span>
+        <div><label for="import">Import</label> <input type="file" id="import" title="Import" accept=".json"></div>
+        <span>Bytes used: <span id="space"></span></span>
+    </details>
 
-
-
-    <br/>
-    <footer>
-        Bytes used:<span id="space"></span>
-    </footer>
-
-    <button id="clear">Delete All</button>
+<!--    <footer> </footer>-->
 </div>
 
 <script src="jquery-3.5.1.slim.min.js"></script>

@@ -22,7 +22,7 @@ $(function () {
         $('ul').empty()
 
         Object.entries(await all()).forEach(([name, filter]) => {
-            $("ul").append(`<li class="item" data-filter="${filter}" data-name="${name}"><a class="name" href="#">${name}</a>  <span class="edit">&#9998;</span> <span class="delete">&cross;</span></li>`);
+            $("ul").append(`<li class="item" data-name="${name}" data-filter="${filter}"><a class="name" href="#" title="open">${name}</a> <span class="edit">&#9998;</span> <span class="delete">&cross;</span></li>`);
         });
 
         $("li .name").click(async function () {
@@ -75,17 +75,23 @@ $(function () {
 
 
     $("#import").change(async function () {
-        const fr = new FileReader();
-        fr.onload = function () {
-            let object = JSON.parse(fr.result);
-            if (object.type === "gmail-saved-search" && object.version >= 2 && object.data) {
-                merge(object.data)
-                alert("imported all")
-            } else {
+        const fileChooser = this
+        const fileReader = new FileReader();
+        fileReader.onload = function () {
+            try {
+                let object = JSON.parse(fileReader.result);
+                if (object.type === "gmail-saved-search" && object.version >= 2 && object.data) {
+                    merge(object.data)
+                    alert("imported all")
+                    fileChooser.val('');
+                } else {
+                    alert ("doesn't seem to be valid file")
+                }
+            } catch (e) {
                 alert ("doesn't seem to be valid file")
             }
         }
-        fr.readAsText(this.files[0]);
+        fileReader.readAsText(fileChooser.files[0]);
     })
 
     $("#clear").click(async function () {
