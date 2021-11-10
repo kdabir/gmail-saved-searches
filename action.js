@@ -1,6 +1,6 @@
 $(function () {
     // this executes whenever the extension is clicked
-    const {all, find, update, remove, replace, onChange} = savedSearchesStore()
+    const {all, find, update, remove, replace, onChange, rename, clear} = savedSearchesStore()
     const {firstActiveTab} = queryBrowser()
 
     onChange(async function (changes, namespace) {
@@ -22,16 +22,31 @@ $(function () {
         $('ul').empty()
 
         Object.entries(await all()).forEach(([name, filter]) => {
-            $("ul").append(`<li data-filter="${filter}"><a href="#">${name}</a></li>`);
+            $("ul").append(`<li class="item" data-filter="${filter}" data-name="${name}"><a class="name" href="#">${name}</a>  <span class="edit">&#9998;</span> <span class="delete">&cross;</span></li>`);
         });
 
-        $("li").click(async function () {
-            const filter = $(this).data("filter");
+        $("li .name").click(async function () {
+            const filter = $(this).parent(".item").data("filter");
             if (filter) {
                 const tab = await firstActiveTab()
                 const url = tab.url.split("#")[0];
 
                 chrome.tabs.update({url: `${url}#${filter}`});
+            }
+        });
+        $("li .edit").click(async function () {
+            const name = $(this).parent(".item").data("name")
+            const newName = prompt("Please enter a name", name);
+            if (name && newName) {
+                await rename(name, newName)
+
+                alert("successfully updated");
+            }
+        });
+        $("li .delete").click(async function () {
+            const name = $(this).parent(".item").data("name")
+            if (name && confirm(`Confirm delete saved search "${name}"?`)) {
+                await remove(name)
             }
         });
 
@@ -53,8 +68,14 @@ $(function () {
 
 
     $("#import").click(async function () {
-        const {get} = storage()
         alert("not implemented yet")
+    })
+
+    $("#clear").click(async function () {
+        if(confirm("This will delete all items, are you sure?")) {
+            await clear()
+            alert("deleted all items")
+        }
     })
 
     render();
@@ -62,7 +83,7 @@ $(function () {
 
 
 function savedSearchesStore() {
-    const {get, set, onChange} = storage()
+    const {get, set, clear, onChange} = storage()
     const STORAGE_KEY = "savedFilters"
 
     const all = () => get(STORAGE_KEY).then(obj => obj[STORAGE_KEY] || {})
@@ -75,6 +96,14 @@ function savedSearchesStore() {
     const update = async (name, filter) => {
         const vals = await all()
         vals[name] = filter; // mutation
+        await replace(vals)
+    }
+
+    const rename = async (oldName, newName) => {
+        const vals = await all()
+        const filter = vals[oldName]
+        delete vals[oldName]
+        vals[newName] = filter
         await replace(vals)
     }
 
@@ -91,7 +120,7 @@ function savedSearchesStore() {
         }
     }
 
-    return {all, find, update, remove, merge, replace, onChange}
+    return {all, find, update, remove, merge, replace, rename, clear, onChange}
 }
 
 
@@ -116,9 +145,10 @@ function storage(sync = true) {
 
     const get = promisify2(storage, 'get')
     const set = promisify2(storage, 'set')
+    const clear = promisify2(storage, 'clear')
     const onChange = (fn) => storage.onChanged.addListener(fn)
 
-    return {get, set, onChange}
+    return {get, set, clear, onChange}
 }
 
 // the get/set on chrome store cannot be passed without explicitly binding the context
