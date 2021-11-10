@@ -1,6 +1,6 @@
 $(function () {
     // this executes whenever the extension is clicked
-    const {all, find, update, remove, replace, onChange, rename, clear} = savedSearchesStore()
+    const {all, merge, update, remove, onChange, rename, clear} = savedSearchesStore()
     const {firstActiveTab} = queryBrowser()
 
     onChange(async function (changes, namespace) {
@@ -55,7 +55,14 @@ $(function () {
 
     $("#export").click(function () {
         chrome.storage.sync.get("savedFilters", function ({savedFilters}) {
-            const blob = new Blob([JSON.stringify(savedFilters, null, 2)], {type: 'application/json'});
+            const obj = {
+                type: "gmail-saved-search",
+                version: 2,
+                data: savedFilters
+            }
+
+
+            const blob = new Blob([JSON.stringify(obj, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob)
 
             chrome.downloads.download({
@@ -67,12 +74,22 @@ $(function () {
     });
 
 
-    $("#import").click(async function () {
-        alert("not implemented yet")
+    $("#import").change(async function () {
+        const fr = new FileReader();
+        fr.onload = function () {
+            let object = JSON.parse(fr.result);
+            if (object.type === "gmail-saved-search" && object.version >= 2 && object.data) {
+                merge(object.data)
+                alert("imported all")
+            } else {
+                alert ("doesn't seem to be valid file")
+            }
+        }
+        fr.readAsText(this.files[0]);
     })
 
     $("#clear").click(async function () {
-        if(confirm("This will delete all items, are you sure?")) {
+        if (confirm("This will delete all items, are you sure?")) {
             await clear()
             alert("deleted all items")
         }
