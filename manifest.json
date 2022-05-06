@@ -1,7 +1,7 @@
 {
   "name": "GMail Saved Searches",
   "version": "0.0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Save your gmail search queries and quickly access when required",
   "homepage_url": "https://github.com/kdabir/gmail-saved-searches",
   "icons": {
@@ -12,7 +12,7 @@
     "128": "icons/icon128.png",
     "256": "icons/icon256.png"
   },
-  "page_action": {
+  "action": {
     "default_popup": "action.html",
     "default_title": "GMail Saved Searches",
     "default_icon": {
@@ -25,16 +25,15 @@
     }
   },
   "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": false
+    "service_worker": "background.js"  
   },
-  "permissions": [
-    "https://mail.google.com/*",
+  "permissions": [  
     "tabs",
     "storage",
     "downloads",
     "declarativeContent"
+  ],
+  "host_permissions": [
+    "https://mail.google.com/*"  
   ]
 }
